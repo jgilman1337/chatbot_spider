@@ -8,8 +8,8 @@ the following methods:
 */
 type Crawler[T any] interface {
 	// Fetches the raw HTML that is to be parsed.
-	Crawl(url string) (string, error)
+	Crawl(url string) ([]byte, error)
 
 	// Parses the raw HTML into a desired type.
-	Aggregate() (*T, error)
+	Aggregate(html []byte) (*T, error)
 }
