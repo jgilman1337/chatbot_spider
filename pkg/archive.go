@@ -4,6 +4,14 @@ import "time"
 
 // Represents an archived chatbot thread.
 type Archive struct {
+	Metadata
+
+	//The payload of the archive.
+	Thread Thread
+}
+
+// Represents the metadata of chatbot archive.
+type Metadata struct {
 	//The title of the thread (usually a truncated version of the opening question).
 	Title string
 
