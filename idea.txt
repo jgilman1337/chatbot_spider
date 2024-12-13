@@ -1,0 +1,12 @@
+write a quick and dirty discord bot in Go that auto-archives perplexity threads. use web scraping via `soup` on Perplexity. Output Markdown files, with the following fields in a single query
+- user query
+- ai response (incl inline citations)
+- source link list
+
+Go web spider for chatbot saver
+- overarching struct `Spider` that takes in interfaces of type `Crawler`
+- `Crawler` provides methods:
+- `func Crawl(url string) (string, error)`
+- `func Aggregate() (Question, error)`
+- `Question` has fields: `Query []string`, `Response []string`, `Sources []string`
+- `Spider` has method `Compile() ([]string, error)` that converts a thread to markdown
