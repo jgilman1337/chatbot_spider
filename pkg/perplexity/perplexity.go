@@ -131,6 +131,10 @@ func (c Crawler[T]) Aggregate(_ []byte) (*T, error) {
 		defer file.Close()
 	*/
 
+	//Create arrays for questions and answers
+	//questions := make([]string, 0)
+	answers := make([]pkg.Reply, 0)
+
 	/*
 		Perplexity uses a JS frontend to render the content on the page, so
 		scraping isn't as straightforward. Luckily, the data that is inserted
@@ -141,40 +145,40 @@ func (c Crawler[T]) Aggregate(_ []byte) (*T, error) {
 		//Get the content of the script
 		cont := s.Text()
 
-		//Create arrays for questions and answers
-		//questions := make([]string, 0)
-		answers := make([]pkg.Reply, 0)
-
 		//Skip non-pushing scripts
 		prefix := "self.__next_f.push("
-		if strings.HasPrefix(cont, prefix) {
-			//Remove the prefix and ending paren
-			cont = cont[len(prefix) : len(cont)-1]
-
-			//Skip empty scripts
-			if len(cont) < 1 {
-				return
-			}
-
-			//Answers begin with the following: `[1,"{\"answer\":`
-			if strings.HasPrefix(cont, `[1,"{\"answer\":`) {
-				handleEncounterAnswer(cont, answers)
-			}
-
-			//fmt.Printf("s: %s\n", cont)
-			//idx := util.If(len(cont) <= 200, len(cont), 200)
-			//fmt.Printf("s: %s\n", cont[:idx])
-
-			// Write the content to the file instead of stdout
-			/*
-				if _, err := file.WriteString(fmt.Sprintf("s: %s\n\n", cont)); err != nil {
-					fmt.Printf("Error writing to file: %v\n", err)
-				}
-			*/
+		if !strings.HasPrefix(cont, prefix) {
+			return
 		}
+		//Remove the prefix and ending paren
+		cont = cont[len(prefix) : len(cont)-1]
+
+		//Skip empty scripts
+		if len(cont) < 1 {
+			return
+		}
+
+		//Answers begin with the following: `[1,"{\"answer\":`
+		//TODO: use KMP for non-trivial cases
+		if strings.HasPrefix(cont, `[1,"{\"answer\":`) {
+			handleEncounterAnswer(cont, &answers)
+		}
+
+		//fmt.Printf("s: %s\n", cont)
+		//idx := util.If(len(cont) <= 200, len(cont), 200)
+		//fmt.Printf("s: %s\n", cont[:idx])
+
+		// Write the content to the file instead of stdout
+		/*
+			if _, err := file.WriteString(fmt.Sprintf("s: %s\n\n", cont)); err != nil {
+				fmt.Printf("Error writing to file: %v\n", err)
+			}
+		*/
 	})
 
-	//query_str
+	for i, answer := range answers {
+		fmt.Printf("answer #%d, %v\n", i+1, answer)
+	}
 
 	return nil, nil
 }

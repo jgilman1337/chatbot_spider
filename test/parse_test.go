@@ -42,3 +42,21 @@ func TestParse_Single(t *testing.T) {
 	}
 	fmt.Printf("data: %v\n", dat)
 }
+
+func TestParse_Two(t *testing.T) {
+	//Setup
+	url := "./data/two_qs.txt"
+
+	//Do the initial crawl
+	crawler := perplexity.NewPerplexityCrawler()
+	if err := crawler.FromFile(url); err != nil {
+		t.Fatal(err)
+	}
+
+	//Get the metadata
+	dat, err := crawler.Aggregate([]byte{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Printf("data: %v\n", dat)
+}

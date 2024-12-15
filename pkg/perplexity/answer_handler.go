@@ -8,40 +8,7 @@ import (
 )
 
 // Handles what is to be done when the aggregator encounters a block containing an answer.
-// The structure of an answer is as follows (irrelevant fields are omitted for brevity):
-/*
-	{
-	    "$schema": "http://json-schema.org/draft-07/schema#",
-	    "type": "object",
-	    "properties": {
-	        "answer": {
-	            "type": "string"
-	        },
-	        "web_results": {
-	            "type": "array",
-	            "items": {
-	                "type": "object",
-	                "properties": {
-	                    "url": {
-	                        "type": "string"
-	                    }
-	                }
-	            }
-	        },
-	        "chunks": {
-	            "type": "array",
-	            "items": {
-	                "type": "string"
-	            }
-	        },
-	        "extra_web_results": {
-	            "type": "array",
-	            "items": {}
-	        }
-	    }
-	}
-*/
-func handleEncounterAnswer(cont string, ans pkg.Replies) {
+func handleEncounterAnswer(cont string, ans *[]pkg.Reply) {
 	//Unmarshal to an array of interfaces
 	//This unescapes the target JSON data
 	data := make([]interface{}, 0)
@@ -50,8 +17,8 @@ func handleEncounterAnswer(cont string, ans pkg.Replies) {
 		return
 	}
 
-	//Set up a map that will eventually contain the answer
-	jsons := make(map[string]interface{})
+	//Setup the target answer struct
+	var answer Answer
 
 	//Loop over the collected array items
 	for _, dat := range data {
@@ -61,27 +28,28 @@ func handleEncounterAnswer(cont string, ans pkg.Replies) {
 			continue
 		}
 
-		//Unmarshal to a map; answers are simply JSON
-		if err := json.Unmarshal([]byte(item), &jsons); err != nil {
+		//Unmarshal the answer to a struct
+		if err := json.Unmarshal([]byte(item), &answer); err != nil {
 			fmt.Printf("err during 2nd parse pass: %s\n", err)
 			continue
 		}
 
-		//Check for the existence of an answer
-		ansText, ok := jsons["answer"]
-		if !ok {
-			continue
-		}
-
-		//Construct a reply object
-		reply := pkg.Reply{
-			Answer: ansText.(string), //A type assertion is safe; `answer` is always a string
-		}
-		fmt.Printf("answer: %v\n", reply)
-
-		//The answer was found; no need to continue searching
+		//Answer was found; no need to continue
 		break
 	}
 
-	fmt.Println("\n\n")
+	//Collect the list of source URL
+	sources := make([]string, len(answer.WebResults))
+	for i, result := range answer.WebResults {
+		sources[i] = result.URL
+	}
+
+	//Construct a generic reply object
+	reply := pkg.Reply{
+		Answer:  answer.Answer,
+		Sources: sources,
+	}
+
+	//Add the answer to the answer array
+	*ans = append(*ans, reply)
 }
