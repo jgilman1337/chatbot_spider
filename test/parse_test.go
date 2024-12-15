@@ -9,7 +9,7 @@ import (
 
 func TestParse_Multiple(t *testing.T) {
 	//Setup
-	url := "./data/multiple_qs.html"
+	url := "./data/multiple_qs.txt"
 
 	//Do the initial crawl
 	crawler := perplexity.NewPerplexityCrawler()
@@ -27,7 +27,7 @@ func TestParse_Multiple(t *testing.T) {
 
 func TestParse_Single(t *testing.T) {
 	//Setup
-	url := "./data/single_q.html"
+	url := "./data/single_q.txt"
 
 	//Do the initial crawl
 	crawler := perplexity.NewPerplexityCrawler()
