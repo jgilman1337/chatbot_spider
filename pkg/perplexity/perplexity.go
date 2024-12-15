@@ -2,6 +2,7 @@ package perplexity
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -83,12 +84,33 @@ func (c *Crawler[T]) Crawl(url string) ([]byte, error) {
 	}
 
 	//Load the HTML document from the bytes
-	c.doc, err = goquery.NewDocumentFromReader(bytes.NewReader([]byte(outHtml)))
-	if err != nil {
+	if err := c.FromBytes([]byte(outHtml)); err != nil {
 		return nil, err
 	}
 
 	return []byte(c.doc.Text()), nil
+}
+
+// Reads in a document from a byte array.
+func (c *Crawler[T]) FromBytes(src []byte) error {
+	var err error
+	c.doc, err = goquery.NewDocumentFromReader(bytes.NewReader(src))
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// Reads in a document from a file.
+func (c *Crawler[T]) FromFile(path string) error {
+	content, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
+	if err := c.FromBytes(content); err != nil {
+		return err
+	}
+	return nil
 }
 
 // Parses the raw HTML into a desired type.
@@ -99,14 +121,16 @@ func (c Crawler[T]) Aggregate(_ []byte) (*T, error) {
 	}
 
 	//TODO: temp
-	// Create a new file with a timestamp in its name
-	timestamp := time.Now().Unix()
-	fileName := fmt.Sprintf("data_%d.txt", timestamp)
-	file, err := os.Create(fileName)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
+	/*
+		// Create a new file with a timestamp in its name
+		timestamp := time.Now().Unix()
+		fileName := fmt.Sprintf("data_%d.txt", timestamp)
+		file, err := os.Create(fileName)
+		if err != nil {
+			return nil, err
+		}
+		defer file.Close()
+	*/
 
 	/*
 		Perplexity uses a JS frontend to render the content on the page, so
@@ -119,8 +143,8 @@ func (c Crawler[T]) Aggregate(_ []byte) (*T, error) {
 		cont := s.Text()
 
 		//Create arrays for questions and answers
-		//quests := make([]string, 0)
-		//answs := make([]string, 0)
+		//questions := make([]string, 0)
+		answers := make([]pkg.Reply, 0)
 
 		//Skip non-pushing scripts
 		prefix := "self.__next_f.push("
@@ -129,8 +153,13 @@ func (c Crawler[T]) Aggregate(_ []byte) (*T, error) {
 			cont = cont[len(prefix) : len(cont)-1]
 
 			//Skip empty scripts
-			if len(s.Text()) < 1 {
+			if len(cont) < 1 {
 				return
+			}
+
+			//Answers begin with the following: `[1,"{\"answer\":`
+			if strings.HasPrefix(cont, `[1,"{\"answer\":`) {
+				handleEncounterAnswer(cont, answers)
 			}
 
 			//fmt.Printf("s: %s\n", cont)
@@ -138,10 +167,11 @@ func (c Crawler[T]) Aggregate(_ []byte) (*T, error) {
 			//fmt.Printf("s: %s\n", cont[:idx])
 
 			// Write the content to the file instead of stdout
-			if _, err := file.WriteString(fmt.Sprintf("s: %s\n\n", cont)); err != nil {
-				fmt.Printf("Error writing to file: %v\n", err)
-			}
-
+			/*
+				if _, err := file.WriteString(fmt.Sprintf("s: %s\n\n", cont)); err != nil {
+					fmt.Printf("Error writing to file: %v\n", err)
+				}
+			*/
 		}
 	})
 
@@ -179,4 +209,50 @@ func (c Crawler[T]) assertNonNilDoc() error {
 	} else {
 		return nil
 	}
+}
+
+// Handles what is to be done when the aggregator encounters a block containing an answer.
+func handleEncounterAnswer(cont string, ans pkg.Replies) {
+	//Unmarshal to an array of interfaces
+	//This unescapes the target JSON data
+	data := make([]interface{}, 0)
+	if err := json.Unmarshal([]byte(cont), &data); err != nil {
+		fmt.Printf("err during 1st parse pass: %s\n", err)
+		return
+	}
+
+	//Set up a map that will eventually contain the answer
+	jsons := make(map[string]interface{})
+
+	//Loop over the collected array items
+	for _, dat := range data {
+		//Skip non-strings
+		item, ok := dat.(string)
+		if !ok {
+			continue
+		}
+
+		//Unmarshal to a map; answers are simply JSON
+		if err := json.Unmarshal([]byte(item), &jsons); err != nil {
+			fmt.Printf("err during 2nd parse pass: %s\n", err)
+			continue
+		}
+
+		//Check for the existence of an answer
+		ansText, ok := jsons["answer"]
+		if !ok {
+			continue
+		}
+
+		//Construct a reply object
+		reply := pkg.Reply{
+			Answer: ansText.(string), //A type assertion is safe; `answer` is always a string
+		}
+		fmt.Printf("answer: %v\n", reply)
+
+		//The answer was found; no need to continue searching
+		break
+	}
+
+	fmt.Println("\n\n")
 }

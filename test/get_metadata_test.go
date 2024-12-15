@@ -9,7 +9,8 @@ import (
 
 func TestGetMetadata(t *testing.T) {
 	//Setup
-	url := "https://www.perplexity.ai/page/mirror-microbe-threat-warning-_ZXTBw9cTj6jbVaTlnz4vQ"
+	url := "https://www.perplexity.ai/search/how-long-does-perplexity-store-nBUeH74UQ8KApfeFIct7sw"
+	//url := "https://www.perplexity.ai/page/mirror-microbe-threat-warning-_ZXTBw9cTj6jbVaTlnz4vQ"
 
 	//Do the initial crawl
 	crawler := perplexity.NewPerplexityCrawler()

@@ -9,7 +9,7 @@ type Question struct {
 	Query []string
 
 	//The response from the chatbot.
-	Response []string
+	Response Reply
 
 	//The list of raw URLs that the chatbot used as sources.
 	Sources []string
