@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	kmp "github.com/fbonhomm/knuth-morris-pratt/source"
 	"github.com/jgilman1337/chatbot_spider/pkg"
 	"github.com/jgilman1337/chatbot_spider/pkg/spider"
 )
@@ -146,21 +147,27 @@ func (c Crawler[T]) Aggregate(_ []byte) (*T, error) {
 		cont := s.Text()
 
 		//Skip non-pushing scripts
+		//TODO: might want to use KMP here too
 		prefix := "self.__next_f.push("
+		suffix := ")"
 		if !strings.HasPrefix(cont, prefix) {
 			return
 		}
 		//Remove the prefix and ending paren
-		cont = cont[len(prefix) : len(cont)-1]
+		cont = cont[len(prefix) : len(cont)-len(suffix)]
 
 		//Skip empty scripts
 		if len(cont) < 1 {
 			return
 		}
 
-		//Answers begin with the following: `[1,"{\"answer\":`
-		//TODO: use KMP for non-trivial cases
-		if strings.HasPrefix(cont, `[1,"{\"answer\":`) {
+		//Check if the current script content
+		//Answers begin with the following: `{\"answer\":`
+		//TODO: multi-faceted KMP might be a good idea to use once question searches are added
+		ansPrefix := `{\"answer\":`
+		kmpIdx := kmp.Search([]byte(cont), []byte(ansPrefix))
+		if kmpIdx != -1 {
+			//fmt.Printf("ans: %s\n", cont)
 			handleEncounterAnswer(cont, &answers)
 		}
 
@@ -176,8 +183,9 @@ func (c Crawler[T]) Aggregate(_ []byte) (*T, error) {
 		*/
 	})
 
+	fmt.Printf("answers found: %d\n", len(answers))
 	for i, answer := range answers {
-		fmt.Printf("answer #%d, %v\n", i+1, answer)
+		fmt.Printf("answer #%d: %v\n", i+1, answer)
 	}
 
 	return nil, nil

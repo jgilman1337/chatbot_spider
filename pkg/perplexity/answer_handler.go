@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	kmp "github.com/fbonhomm/knuth-morris-pratt/source"
 	"github.com/jgilman1337/chatbot_spider/pkg"
 )
 
@@ -19,6 +20,7 @@ func handleEncounterAnswer(cont string, ans *[]pkg.Reply) {
 
 	//Setup the target answer struct
 	var answer Answer
+	foundAns := false
 
 	//Loop over the collected array items
 	for _, dat := range data {
@@ -28,6 +30,15 @@ func handleEncounterAnswer(cont string, ans *[]pkg.Reply) {
 			continue
 		}
 
+		//Get the index of the beginning of the answer object, skipping unmatched array items
+		//The answer object starts with `{"answer":`
+		prefix := `{"answer":`
+		idx := kmp.Search([]byte(item), []byte(prefix))
+		if idx == -1 {
+			continue
+		}
+		item = item[idx:]
+
 		//Unmarshal the answer to a struct
 		if err := json.Unmarshal([]byte(item), &answer); err != nil {
 			fmt.Printf("err during 2nd parse pass: %s\n", err)
@@ -35,7 +46,13 @@ func handleEncounterAnswer(cont string, ans *[]pkg.Reply) {
 		}
 
 		//Answer was found; no need to continue
+		foundAns = true
 		break
+	}
+
+	//Parse the answer only if it's non-null
+	if !foundAns {
+		return
 	}
 
 	//Collect the list of source URL
