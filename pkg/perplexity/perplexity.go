@@ -133,7 +133,7 @@ func (c Crawler[T]) Aggregate(_ []byte) (*T, error) {
 	*/
 
 	//Create arrays for questions and answers
-	//questions := make([]string, 0)
+	questions := make([]string, 0)
 	answers := make([]pkg.Reply, 0)
 
 	/*
@@ -161,14 +161,29 @@ func (c Crawler[T]) Aggregate(_ []byte) (*T, error) {
 			return
 		}
 
+		//TODO: multi-faceted KMP might be a good idea to use once question searches are added
+
 		//Check if the current script content has an answer using the KMP algorithm
 		//Answers begin with the following: `{\"answer\":`
-		//TODO: multi-faceted KMP might be a good idea to use once question searches are added
 		ansPrefix := `{\"answer\":`
-		kmpIdx := kmp.Search([]byte(cont), []byte(ansPrefix))
-		if kmpIdx != -1 {
-			//fmt.Printf("ans: %s\n", cont)
+		kmpAnsIdx := kmp.Search([]byte(cont), []byte(ansPrefix))
+		if kmpAnsIdx != -1 {
 			handleEncounterAnswer(cont, &answers)
+		}
+
+		//Check if the current script content has a question using the KMP algorithm
+		//Questions begin with the following: `{\"answer\":`
+		quesPrefix := `\"queries\":[`
+		kmpQuesIdx := kmp.Search([]byte(cont), []byte(quesPrefix))
+		if kmpQuesIdx != -1 {
+			//Skip matches with empty query arrays (false positives)
+			queryArrBegin := cont[kmpQuesIdx+len(quesPrefix)]
+			if queryArrBegin == ']' {
+				return
+			}
+			//fmt.Printf("ques: %s\n\n\n\n\n", cont)
+
+			handleEncounterQuestion(cont, &questions)
 		}
 
 		//fmt.Printf("s: %s\n", cont)
@@ -183,10 +198,12 @@ func (c Crawler[T]) Aggregate(_ []byte) (*T, error) {
 		*/
 	})
 
-	fmt.Printf("answers found: %d\n", len(answers))
-	for i, answer := range answers {
-		fmt.Printf("answer #%d: %v\n", i+1, answer)
-	}
+	/*
+		fmt.Printf("answers found: %d\n", len(answers))
+		for i, answer := range answers {
+			fmt.Printf("answer #%d: %v\n", i+1, answer)
+		}
+	*/
 
 	return nil, nil
 }

@@ -14,7 +14,7 @@ func handleEncounterAnswer(cont string, ans *[]pkg.Reply) {
 	//This unescapes the target JSON data
 	data := make([]interface{}, 0)
 	if err := json.Unmarshal([]byte(cont), &data); err != nil {
-		fmt.Printf("err during 1st parse pass: %s\n", err)
+		fmt.Printf("answerHandler: err during 1st parse pass: %s\n", err)
 		return
 	}
 
@@ -41,7 +41,7 @@ func handleEncounterAnswer(cont string, ans *[]pkg.Reply) {
 
 		//Unmarshal the answer to a struct
 		if err := json.Unmarshal([]byte(item), &answer); err != nil {
-			fmt.Printf("err during 2nd parse pass: %s\n", err)
+			fmt.Printf("answerHandler: err during 2nd parse pass: %s\n", err)
 			continue
 		}
 
