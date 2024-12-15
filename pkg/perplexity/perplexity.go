@@ -161,7 +161,7 @@ func (c Crawler[T]) Aggregate(_ []byte) (*T, error) {
 			return
 		}
 
-		//Check if the current script content
+		//Check if the current script content has an answer using the KMP algorithm
 		//Answers begin with the following: `{\"answer\":`
 		//TODO: multi-faceted KMP might be a good idea to use once question searches are added
 		ansPrefix := `{\"answer\":`
