@@ -6,8 +6,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"os/exec"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
@@ -16,8 +18,19 @@ import (
 )
 
 var (
-	ErrorNilDoc = errors.New("document is not currently populated; run `Crawl()` first")
-	userAgent   = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+	ErrorNilDoc   = errors.New("document is not currently populated; run `Crawl()` first")
+	ErrorHttpResp = errors.New("http error")
+
+	headers = map[string]string{
+		"User-Agent":      "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:132.0) Gecko/20100101 Firefox/132.0",
+		"Accept-Language": "en-US,en;q=0.5",
+		"Accept":          "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+		"DNT":             "1",
+		"Sec-GPC":         "1",
+		"Sec-Fetch-Dest":  "document",
+		"Sec-Fetch-Mode":  "navigate",
+		"Sec-Fetch-Site":  "cross-site",
+	}
 )
 
 // Asserts that this struct conforms to the `Crawler` interface.
@@ -35,16 +48,20 @@ func NewPerplexityCrawler() *Crawler[pkg.Archive] {
 
 // Fetches the raw HTML that is to be parsed.
 func (c *Crawler[T]) Crawl(url string) ([]byte, error) {
-	//Prepare the cURL command
-	cmd := exec.Command("curl",
-		"-w", "%{http_code}", //This line adds the HTTP status code to the end of the output
-		"-H", fmt.Sprintf("User-Agent: %s", userAgent),
-		"-H", "Accept-Language: en-US,en;q=0.6",
-		"-H", "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-		url,
-	)
+	//Prepare the cURL command; Perplexity 403s for the "Go way" of doing this, every time, even with identical headers.
+	//If someone wants to take another crack at this, have at it!
+	args := make([]string, len(headers)*2)
+	i := 0
+	for k, v := range headers {
+		args[i] = "-H"
+		i++
+		args[i] = fmt.Sprintf("%s: %s", k, v)
+		i++
+	}
+	args = append(args, "-w", "%{http_code}", url) //This line adds the HTTP status code to the end of the output
 
 	//Run the command and capture the output
+	cmd := exec.Command("curl", args...)
 	var out bytes.Buffer
 	cmd.Stdout = &out
 	err := cmd.Run()
@@ -60,7 +77,9 @@ func (c *Crawler[T]) Crawl(url string) ([]byte, error) {
 		return nil, err
 	}
 	if statusCode != 200 {
-		return nil, fmt.Errorf("HTTP error %d :: %s", statusCode, http.StatusText(statusCode))
+		return nil, errors.Join(ErrorHttpResp,
+			fmt.Errorf("%d %s", statusCode, http.StatusText(statusCode)),
+		)
 	}
 
 	//Load the HTML document from the bytes
@@ -79,6 +98,55 @@ func (c Crawler[T]) Aggregate(_ []byte) (*T, error) {
 		return nil, err
 	}
 
+	//TODO: temp
+	// Create a new file with a timestamp in its name
+	timestamp := time.Now().Unix()
+	fileName := fmt.Sprintf("data_%d.txt", timestamp)
+	file, err := os.Create(fileName)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	/*
+		Perplexity uses a JS frontend to render the content on the page, so
+		scraping isn't as straightforward. Luckily, the data that is inserted
+		into the rendered page is available as JSON, albeit in the form of JSON
+		fragments inside of `<script>` tags.
+	*/
+	c.doc.Find(`script`).Each(func(_ int, s *goquery.Selection) {
+		//Get the content of the script
+		cont := s.Text()
+
+		//Create arrays for questions and answers
+		//quests := make([]string, 0)
+		//answs := make([]string, 0)
+
+		//Skip non-pushing scripts
+		prefix := "self.__next_f.push("
+		if strings.HasPrefix(cont, prefix) {
+			//Remove the prefix and ending paren
+			cont = cont[len(prefix) : len(cont)-1]
+
+			//Skip empty scripts
+			if len(s.Text()) < 1 {
+				return
+			}
+
+			//fmt.Printf("s: %s\n", cont)
+			//idx := util.If(len(cont) <= 200, len(cont), 200)
+			//fmt.Printf("s: %s\n", cont[:idx])
+
+			// Write the content to the file instead of stdout
+			if _, err := file.WriteString(fmt.Sprintf("s: %s\n\n", cont)); err != nil {
+				fmt.Printf("Error writing to file: %v\n", err)
+			}
+
+		}
+	})
+
+	//query_str
+
 	return nil, nil
 }
 
@@ -91,6 +159,8 @@ func (c Crawler[T]) GetPageMetadata() (*pkg.Metadata, error) {
 
 	//Get the title of the thread
 	title, _ := c.doc.Find(`meta[name="twitter:title"]`).Attr("content")
+
+	//Get the time at which the thread was created
 
 	//Construct the final metadata object
 	meta := pkg.Metadata{
