@@ -19,7 +19,7 @@ func handleEncounterQuestion(cont string, ques *[]string) {
 
 	//Setup the target queries struct
 	var queries Queries
-	//foundQueries := false
+	foundQueries := false
 
 	//Loop over the collected array items
 	for _, dat := range data {
@@ -46,11 +46,21 @@ func handleEncounterQuestion(cont string, ques *[]string) {
 		}
 
 		//Queries object was found; no need to continue
-		//foundQueries = true
+		foundQueries = true
 		break
-
-		//fmt.Printf("hit #%d (datatype: %T): %v\n\n", i+1, item, item)
 	}
 
-	fmt.Printf("queries obj: %+v\n", queries)
+	//Parse the questions only if it's non-null
+	if !foundQueries {
+		return
+	}
+
+	//Add the collected queries to the output array
+	questions := queries.State.Queries[0].State.Data
+	for _, question := range questions {
+		qtext := question.QueryStr
+		*ques = append(*ques, qtext)
+
+		fmt.Printf("question: %s\n\n\n", qtext)
+	}
 }

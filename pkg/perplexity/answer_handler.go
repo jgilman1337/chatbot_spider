@@ -55,7 +55,7 @@ func handleEncounterAnswer(cont string, ans *[]pkg.Reply) {
 		return
 	}
 
-	//Collect the list of source URL
+	//Collect the list of source URLs
 	sources := make([]string, len(answer.WebResults))
 	for i, result := range answer.WebResults {
 		sources[i] = result.URL

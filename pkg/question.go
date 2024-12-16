@@ -6,7 +6,7 @@ Markdown internally.
 */
 type Question struct {
 	//The initial question from the user.
-	Query []string
+	Query string
 
 	//The response from the chatbot.
 	Response Reply
