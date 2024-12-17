@@ -13,14 +13,16 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/araddon/dateparse"
 	kmp "github.com/fbonhomm/knuth-morris-pratt/source"
 	"github.com/jgilman1337/chatbot_spider/pkg"
 	"github.com/jgilman1337/chatbot_spider/pkg/spider"
 )
 
 var (
-	ErrorNilDoc   = errors.New("document is not currently populated; run `Crawl()` first")
-	ErrorHttpResp = errors.New("http error")
+	ErrorNilDoc       = errors.New("document is not currently populated; run `Crawl()` first")
+	ErrorHttpResp     = errors.New("http error")
+	ErrorUnbalancedQA = errors.New("unequal question and answer array sizes")
 
 	headers = map[string]string{
 		"User-Agent":      "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:132.0) Gecko/20100101 Firefox/132.0",
@@ -120,18 +122,6 @@ func (c Crawler[T]) Aggregate(_ []byte) (*T, error) {
 		return nil, err
 	}
 
-	//TODO: temp
-	/*
-		// Create a new file with a timestamp in its name
-		timestamp := time.Now().Unix()
-		fileName := fmt.Sprintf("data_%d.txt", timestamp)
-		file, err := os.Create(fileName)
-		if err != nil {
-			return nil, err
-		}
-		defer file.Close()
-	*/
-
 	//Create arrays for questions and answers
 	questions := make([]string, 0)
 	answers := make([]pkg.Reply, 0)
@@ -147,14 +137,15 @@ func (c Crawler[T]) Aggregate(_ []byte) (*T, error) {
 		cont := s.Text()
 
 		//Skip non-pushing scripts
-		//TODO: might want to use KMP here too
 		prefix := "self.__next_f.push("
 		suffix := ")"
-		if !strings.HasPrefix(cont, prefix) {
+		scriptPrefixIdx := kmp.Search([]byte(cont), []byte(prefix))
+		if scriptPrefixIdx == -1 {
 			return
 		}
+
 		//Remove the prefix and ending paren
-		cont = cont[len(prefix) : len(cont)-len(suffix)]
+		cont = cont[scriptPrefixIdx+len(prefix) : len(cont)-len(suffix)]
 
 		//Skip empty scripts
 		if len(cont) < 1 {
@@ -181,31 +172,42 @@ func (c Crawler[T]) Aggregate(_ []byte) (*T, error) {
 			if queryArrBegin == ']' {
 				return
 			}
-			//fmt.Printf("ques: %s\n\n\n\n\n", cont)
 
+			//Parse out the questions from the found queries block
 			handleEncounterQuestion(cont, &questions)
 		}
-
-		//fmt.Printf("s: %s\n", cont)
-		//idx := util.If(len(cont) <= 200, len(cont), 200)
-		//fmt.Printf("s: %s\n", cont[:idx])
-
-		// Write the content to the file instead of stdout
-		/*
-			if _, err := file.WriteString(fmt.Sprintf("s: %s\n\n", cont)); err != nil {
-				fmt.Printf("Error writing to file: %v\n", err)
-			}
-		*/
 	})
 
-	/*
-		fmt.Printf("answers found: %d\n", len(answers))
-		for i, answer := range answers {
-			fmt.Printf("answer #%d: %v\n", i+1, answer)
-		}
-	*/
+	//At this point, the question and answer arrays are fully filled
+	//It is assumed that each question has a corresponding answer, so reject if this isn't the case
+	if len(questions) != len(answers) {
+		return nil, errors.Join(ErrorUnbalancedQA,
+			fmt.Errorf("; qs[%d], as[%d]", len(questions), len(answers)),
+		)
+	}
 
-	return nil, nil
+	//Build up a thread of questions and answers
+	thread := make([]pkg.Question, len(questions))
+	for i := range thread {
+		threadItem := &thread[i]
+		*threadItem = pkg.Question{
+			Query: questions[i],
+			Reply: answers[i],
+		}
+	}
+
+	//Get the metadata of the page
+	meta, err := c.GetPageMetadata()
+	if err != nil {
+		return nil, err
+	}
+
+	//Compile and return the archive object
+	out := T(pkg.Archive{
+		Metadata: *meta,
+		Thread:   thread,
+	})
+	return &out, nil
 }
 
 // Fetches the metadata of the thread.
@@ -216,14 +218,25 @@ func (c Crawler[T]) GetPageMetadata() (*pkg.Metadata, error) {
 	}
 
 	//Get the title of the thread
-	title, _ := c.doc.Find(`meta[name="twitter:title"]`).Attr("content")
+	title := c.doc.Find(`title`).Text()
+	title = truncateTitle(title)
 
-	//Get the time at which the thread was created
+	//Get the URL and other attributes
+	url, _ := c.doc.Find(`link[rel="canonical"]`).Attr("href")
+	created, _ := c.doc.Find(`meta[name="datePublished"]`).Attr("content")
+
+	//Parse the creation date to a Go time object
+	createdTime, err := dateparse.ParseAny(created)
+	if err != nil {
+		fmt.Printf("error when parsing creation time `%s`: %s", created, err)
+	}
 
 	//Construct the final metadata object
 	meta := pkg.Metadata{
-		Title: title,
-		//Created: time.Time,
+		Title:    title,
+		Service:  "Perplexity.ai",
+		URL:      url,
+		Created:  createdTime,
 		Archived: time.Now(),
 	}
 
@@ -237,4 +250,24 @@ func (c Crawler[T]) assertNonNilDoc() error {
 	} else {
 		return nil
 	}
+}
+
+// Truncates a thread title to the first newline or 100th character, whichever comes first.
+func truncateTitle(title string) string {
+	//Find the index of the first newline
+	firstNewline := strings.Index(title, "\n")
+
+	//Determine the truncation index
+	truncateAt := 100 // Default to 100 characters
+	if firstNewline != -1 && firstNewline < truncateAt {
+		truncateAt = firstNewline
+	}
+
+	//If the title is shorter than the truncation index, return it as is
+	if len(title) <= truncateAt {
+		return title
+	}
+
+	//Truncate the title and add ellipsis
+	return title[:truncateAt] + "..."
 }

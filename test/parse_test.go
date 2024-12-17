@@ -22,7 +22,7 @@ func TestParse_Multiple(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Printf("data: %v\n", dat)
+	fmt.Printf("data: %+v\n", dat)
 }
 
 func TestParse_Nontrivial_Single(t *testing.T) {
@@ -40,7 +40,7 @@ func TestParse_Nontrivial_Single(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Printf("data: %v\n", dat)
+	fmt.Printf("data: %+v\n", dat)
 }
 
 func TestParse_Single(t *testing.T) {
@@ -58,7 +58,7 @@ func TestParse_Single(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Printf("data: %v\n", dat)
+	fmt.Printf("data: %+v\n", dat)
 }
 
 func TestParse_Two(t *testing.T) {
@@ -76,5 +76,5 @@ func TestParse_Two(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Printf("data: %v\n", dat)
+	fmt.Printf("data: %+v\n", dat)
 }
