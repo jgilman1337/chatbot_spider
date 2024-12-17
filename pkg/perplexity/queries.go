@@ -1,39 +1,42 @@
 package perplexity
 
-// Represents a list of all asked questions in Perplexity.
-// The structure of a `Queries` is as follows (irrelevant fields are omitted for brevity):
 /*
-{
-	"$schema": "http://json-schema.org/draft-07/schema#",
-	"type": "object",
-	"properties": {
-		"state": {
-			"type": "object",
-			"properties": {
-				"queries": {
-					"type": "array",
-					"items": {
-						"type": "object",
-						"properties": {
-							"state": {
-								"type": "object",
-								"properties": {
-									"data": {
-										"type": "array",
-										"items": {
-											"type": "object",
-											"properties": {
-												"query_str": {
-													"type": "string"
-												},
-												"related_queries": {
-													"type": "array",
-													"items": {
+Represents a list of all asked questions in Perplexity. This object is only
+to be used when unmarshalling Perplexity replies from a queries payload. The
+structure of a `Queries` is as follows (irrelevant fields are omitted for brevity):
+
+	{
+		"$schema": "http://json-schema.org/draft-07/schema#",
+		"type": "object",
+		"properties": {
+			"state": {
+				"type": "object",
+				"properties": {
+					"queries": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"state": {
+									"type": "object",
+									"properties": {
+										"data": {
+											"type": "array",
+											"items": {
+												"type": "object",
+												"properties": {
+													"query_str": {
+														"type": "string"
+													},
+													"related_queries": {
+														"type": "array",
+														"items": {
+															"type": "string"
+														}
+													},
+													"updated_datetime": {
 														"type": "string"
 													}
-												},
-												"updated_datetime": {
-													"type": "string"
 												}
 											}
 										}
@@ -46,7 +49,6 @@ package perplexity
 			}
 		}
 	}
-}
 */
 type Queries struct {
 	State State1 `json:"state"`

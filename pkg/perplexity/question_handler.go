@@ -60,7 +60,5 @@ func handleEncounterQuestion(cont string, ques *[]string) {
 	for _, question := range questions {
 		qtext := question.QueryStr
 		*ques = append(*ques, qtext)
-
-		fmt.Printf("question: %s\n\n\n", qtext)
 	}
 }

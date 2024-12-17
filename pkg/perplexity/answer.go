@@ -1,8 +1,10 @@
 package perplexity
 
-//Represents an answer to a question in Perplexity.
-// The structure of an answer is as follows (irrelevant fields are omitted for brevity):
 /*
+Represents an answer to a question in Perplexity. This object is only to be used
+when unmarshalling a Perplexity answer from an answer payload. The structure of
+an answer is as follows (irrelevant fields are omitted for brevity):
+
 	{
 		"$schema": "http://json-schema.org/draft-07/schema#",
 		"type": "object",
