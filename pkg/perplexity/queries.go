@@ -4,48 +4,48 @@ package perplexity
 // The structure of a `Queries` is as follows (irrelevant fields are omitted for brevity):
 /*
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "type": "object",
-    "properties": {
-        "state": {
-            "type": "object",
-            "properties": {
-                "queries": {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "state": {
-                                "type": "object",
-                                "properties": {
-                                    "data": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "object",
-                                            "properties": {
-                                                "query_str": {
-                                                    "type": "string"
-                                                },
-                                                "related_queries": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "string"
-                                                    }
-                                                },
-                                                "updated_datetime": {
-                                                    "type": "string"
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"type": "object",
+	"properties": {
+		"state": {
+			"type": "object",
+			"properties": {
+				"queries": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"state": {
+								"type": "object",
+								"properties": {
+									"data": {
+										"type": "array",
+										"items": {
+											"type": "object",
+											"properties": {
+												"query_str": {
+													"type": "string"
+												},
+												"related_queries": {
+													"type": "array",
+													"items": {
+														"type": "string"
+													}
+												},
+												"updated_datetime": {
+													"type": "string"
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }
 */
 type Queries struct {
