@@ -1,0 +1,48 @@
+# How long does perplexity store user created threads via the sezarch box on the frontpage. consider...
+Exported on 17/12/2024 at 13:16:05 [from Perplexity.ai](https://www.perplexity.ai/search/how-long-does-perplexity-store-nBUeH74UQ8KApfeFIct7sw) - with [SaveMyChatbot](https://save.hugocollin.com)
+
+
+## User
+how long does perplexity store user created threads via the sezarch box on the frontpage. consider threads created via anonymous suers who didnt sign in
+
+## AI answer
+Perplexity stores threads created by anonymous users (those who didn't sign in) for a limited time. For users who are not signed into Perplexity, their threads are anonymous by default and are not permanently stored [2](https://guides.iona.edu/c.php?g=1294557&p=10596076). These anonymous threads are likely temporary and self-expiring [8](https://www.lifewire.com/use-perplexity-ai-8729843). For signed-in users, Perplexity allows for longer-term storage and organization of threads. Users can access their past threads through the Library feature, where they can search, organize, and manage their conversation history [7](https://www.perplexity.ai/hub/faq/what-are-threads). However, there may be limitations on how far back the visible thread history extends, as one user reported seeing only 3 days of saved threads [9](https://www.reddit.com/r/perplexity_ai/comments/14mdg8n/questions_on_saved_threads/). It's important to note that Perplexity offers options for users to manage their data retention. Signed-in users can turn off AI data retention in their account settings if they prefer not to have their threads stored long-term [2](https://guides.iona.edu/c.php?g=1294557&p=10596076).
+
+---
+**Sources:**
+- [(1) Perplexity AI: Context Window Size, Thread History, and Long-Term ...](https://www.reddit.com/r/perplexity_ai/comments/1euj3bj/perplexity_ai_context_window_size_thread_history/)
+- [(2) Manage AI Privacy & Data - Introduction to Artificial Intelligence](https://guides.iona.edu/c.php?g=1294557&p=10596076)
+- [(3) What are Spaces? - Perplexity](https://www.perplexity.ai/hub/faq/what-are-spaces)
+- [(4) Perplexity AI vs. ChatGPT: AI Chatbot Comparison - Exploding Topics](https://explodingtopics.com/blog/perplexity-ai-vs-chatgpt)
+- [(5) Importing Existing Threads in Perplexity.AI User Account - Reddit](https://www.reddit.com/r/perplexity_ai/comments/12kr7or/suggesting_a_feature_importing_existing_threads/)
+- [(6) Perplexity AI's Pages Lets You Polish and Publish Your Queries, but ...](https://www.howtogeek.com/perplexity-ais-pages-lets-you-polish-and-publish-your-queries-but-who-is-it-for/)
+- [(7) What is a Thread? - Perplexity](https://www.perplexity.ai/hub/faq/what-are-threads)
+- [(8) Master Perplexity AI: Everything You Need to Know to Begin - Lifewire](https://www.lifewire.com/use-perplexity-ai-8729843)
+- [(9) Questions On Saved Threads : r/perplexity\_ai - Reddit](https://www.reddit.com/r/perplexity_ai/comments/14mdg8n/questions_on_saved_threads/)
+- [(10) Perplexity AI: A Deep Dive - Reflections](https://annjose.com/post/perplexity-ai/)
+- [(11) Perplexity AI Review: Top-Notch Answer Engine - BitDegree](https://www.bitdegree.org/ai/perplexity-ai-review)
+- (12) How to Really Use Perplexity AI Part 2 - YouTube
+- [(13) Profile, settings and languages - Perplexity](https://www.perplexity.ai/hub/faq/ai-profile)
+
+
+
+## User
+ok but how long
+
+## AI answer
+Based on the search results, Perplexity does not provide a specific duration for storing anonymous user threads created via the search box on the front page. However, for users who are not signed in, their threads are anonymous by default and are not permanently stored [9](https://www.perplexity.ai/hub/faq/ai-profile). These anonymous threads are likely temporary and self-expiring. For signed-in users, Perplexity retains personal information and search history as long as the account is active [3](https://www.perplexity.ai/hub/faq/what-data-does-perplexity-collect-about-me). If a user deletes their account, their personal information will be removed from Perplexity's servers within 30 days [3](https://www.perplexity.ai/hub/faq/what-data-does-perplexity-collect-about-me). It's worth noting that Perplexity offers options for users to manage their data retention. Signed-in users can access their past threads through the Library feature, where they can search, organize, and manage their conversation history [7](https://www.perplexity.ai/hub/faq/what-are-threads).
+
+---
+**Sources:**
+- [(1) What are Spaces? - Perplexity](https://www.perplexity.ai/hub/faq/what-are-spaces)
+- [(2) Perplexity Is the Only Paid AI ChatBot You Need—Here's Why](https://www.howtogeek.com/perplexity-is-the-only-paid-ai-chatbot-you-need-heres-why/)
+- [(3) What data does Perplexity collect about me?](https://www.perplexity.ai/hub/faq/what-data-does-perplexity-collect-about-me)
+- [(4) Need support? - Perplexity](https://www.perplexity.ai/hub/faq/support)
+- [(5) Perplexity AI: Context Window Size, Thread History, and Long-Term ...](https://www.reddit.com/r/perplexity_ai/comments/1euj3bj/perplexity_ai_context_window_size_thread_history/)
+- [(6) Making perplexity comparable between models with different ...](https://github.com/ggerganov/llama.cpp/issues/7111)
+- [(7) What is a Thread? - Perplexity](https://www.perplexity.ai/hub/faq/what-are-threads)
+- [(8) Master Perplexity AI: Everything You Need to Know to Begin - Yahoo](https://www.yahoo.com/lifestyle/master-perplexity-ai-everything-know-160000683.html)
+- [(9) Profile, settings and languages - Perplexity](https://www.perplexity.ai/hub/faq/ai-profile)
+- [(10) Perplexity AI is lying about their user agent - Hacker News](https://news.ycombinator.com/item?id=40690898)
+
+
