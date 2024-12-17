@@ -7,23 +7,23 @@ type Archive struct {
 	Metadata
 
 	//The payload of the archive.
-	Thread Thread
+	Thread Thread `json:"thread"`
 }
 
 // Represents the metadata of chatbot archive.
 type Metadata struct {
 	//The title of the thread (usually a truncated version of the opening question).
-	Title string
+	Title string `json:"title"`
 
 	//The name of the service from which the data was sourced.
-	Service string
+	Service string `json:"service"`
 
 	//The URL of the page that was archived.
-	URL string
+	URL string `json:"url"`
 
 	//The time at which the thread was created.
-	Created time.Time
+	Created time.Time `json:"created"`
 
 	//The time at which the thread was archived.
-	Archived time.Time
+	Archived time.Time `json:"archived"`
 }

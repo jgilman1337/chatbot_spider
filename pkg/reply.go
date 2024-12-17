@@ -6,11 +6,18 @@ the relevant sources.
 */
 type Reply struct {
 	//The answer from the chatbot.
-	Answer string
+	Answer string `json:"answer"`
 
 	//The list of source URLs.
-	Sources []string
+	Sources []Source `json:"sources"`
 }
 
 // Represents a list of replies.
 type Replies []Reply
+
+// Represents a single reply source, which has an ID, name, and URL.
+type Source struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+	URL  string `json:"url"`
+}

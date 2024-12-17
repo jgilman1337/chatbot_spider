@@ -6,13 +6,10 @@ Markdown internally.
 */
 type Question struct {
 	//The initial question from the user.
-	Query string
+	Query string `json:"query"`
 
 	//The response from the chatbot.
-	Response Reply
-
-	//The list of raw URLs that the chatbot used as sources.
-	Sources []string
+	Reply Reply `json:"reply"`
 }
 
 // A thread is a list of questions, in order of when they were asked.
