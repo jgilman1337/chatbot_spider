@@ -8,5 +8,6 @@ require (
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de // indirect
 	github.com/fbonhomm/knuth-morris-pratt v0.0.0-20210605112629-42307721d294 // indirect
 	github.com/pgavlin/aho-corasick v0.5.1 // indirect
+	github.com/yuin/goldmark v1.7.8 // indirect
 	golang.org/x/net v0.29.0 // indirect
 )

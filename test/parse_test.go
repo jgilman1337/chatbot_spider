@@ -40,7 +40,14 @@ func parserTestsBackend(t *testing.T, url string) *pkg.Archive {
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Printf("data: %+v\n", dat)
+	//fmt.Printf("data: %+v\n", dat)
+
+	//Render to markdown
+	md, err := dat.RenderMD()
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Println("md::```\n" + string(md) + "\n```")
 
 	//Return the metadata object
 	return dat
