@@ -4,67 +4,31 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/jgilman1337/chatbot_spider/pkg"
 	"github.com/jgilman1337/chatbot_spider/pkg/perplexity"
 )
 
 func TestParse_Multiple(t *testing.T) {
-	//Setup
 	url := "./data/multiple_qs.txt"
-
-	//Do the initial crawl
-	crawler := perplexity.NewPerplexityCrawler()
-	if err := crawler.FromFile(url); err != nil {
-		t.Fatal(err)
-	}
-
-	//Get the metadata
-	dat, err := crawler.Aggregate([]byte{})
-	if err != nil {
-		t.Fatal(err)
-	}
-	fmt.Printf("data: %+v\n", dat)
+	parserTestsBackend(t, url)
 }
 
 func TestParse_Nontrivial_Single(t *testing.T) {
-	//Setup
 	url := "./data/nontrivial_single_q.txt"
-
-	//Do the initial crawl
-	crawler := perplexity.NewPerplexityCrawler()
-	if err := crawler.FromFile(url); err != nil {
-		t.Fatal(err)
-	}
-
-	//Get the metadata
-	dat, err := crawler.Aggregate([]byte{})
-	if err != nil {
-		t.Fatal(err)
-	}
-	fmt.Printf("data: %+v\n", dat)
+	parserTestsBackend(t, url)
 }
 
 func TestParse_Single(t *testing.T) {
-	//Setup
 	url := "./data/single_q.txt"
-
-	//Do the initial crawl
-	crawler := perplexity.NewPerplexityCrawler()
-	if err := crawler.FromFile(url); err != nil {
-		t.Fatal(err)
-	}
-
-	//Get the metadata
-	dat, err := crawler.Aggregate([]byte{})
-	if err != nil {
-		t.Fatal(err)
-	}
-	fmt.Printf("data: %+v\n", dat)
+	parserTestsBackend(t, url)
 }
 
 func TestParse_Two(t *testing.T) {
-	//Setup
 	url := "./data/two_qs.txt"
+	parserTestsBackend(t, url)
+}
 
+func parserTestsBackend(t *testing.T, url string) *pkg.Archive {
 	//Do the initial crawl
 	crawler := perplexity.NewPerplexityCrawler()
 	if err := crawler.FromFile(url); err != nil {
@@ -77,4 +41,7 @@ func TestParse_Two(t *testing.T) {
 		t.Fatal(err)
 	}
 	fmt.Printf("data: %+v\n", dat)
+
+	//Return the metadata object
+	return dat
 }
