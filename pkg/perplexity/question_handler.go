@@ -8,7 +8,7 @@ import (
 )
 
 // Handles what is to be done when the aggregator encounters a block containing a question
-func handleEncounterQuestion(cont string, ques *[]string) {
+func (c Crawler[T]) handleEncounterQuestion(cont string, ques *[]string) {
 	//Unmarshal to an array of interfaces
 	//This unescapes the target JSON data
 	data := make([]interface{}, 0)

@@ -41,12 +41,17 @@ var _ spider.Crawler[pkg.Archive] = &Crawler[pkg.Archive]{}
 
 // A web crawler for `https://perplexity.ai` threads that implements `spider.Crawler`.
 type Crawler[T pkg.Archive] struct {
+	Options Options //Crawler options.
+
 	doc *goquery.Document //Cached version of the document.
 }
 
 // Creates a new Perplexity.ai crawler.
 func NewPerplexityCrawler() *Crawler[pkg.Archive] {
-	return &Crawler[pkg.Archive]{}
+	obj := Crawler[pkg.Archive]{
+		Options: DefaultOpts(),
+	}
+	return &obj
 }
 
 // Fetches the raw HTML that is to be parsed.
@@ -159,7 +164,7 @@ func (c Crawler[T]) Aggregate(_ []byte) (*T, error) {
 		ansPrefix := `{\"answer\":`
 		kmpAnsIdx := kmp.Search([]byte(cont), []byte(ansPrefix))
 		if kmpAnsIdx != -1 {
-			handleEncounterAnswer(cont, &answers)
+			c.handleEncounterAnswer(cont, &answers)
 		}
 
 		//Check if the current script content has a question using the KMP algorithm
@@ -174,7 +179,7 @@ func (c Crawler[T]) Aggregate(_ []byte) (*T, error) {
 			}
 
 			//Parse out the questions from the found queries block
-			handleEncounterQuestion(cont, &questions)
+			c.handleEncounterQuestion(cont, &questions)
 		}
 	})
 

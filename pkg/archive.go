@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strings"
 	"time"
+
+	"github.com/jgilman1337/chatbot_spider/pkg/util"
 )
 
 var (
@@ -81,7 +83,6 @@ func (a Archive) RenderMD() ([]byte, error) {
 		))
 
 		//Add the reply, sans any sources
-		//TODO: run post-process on the sources to add a space and proper attribution, if necessary
 		builder.WriteString(fmt.Sprintf("## %s\n%s%s",
 			ReplyHeader,
 			question.Reply.Answer,
@@ -97,7 +98,7 @@ func (a Archive) RenderMD() ([]byte, error) {
 
 			builder.WriteString(fmt.Sprintf("- [(%d) %s](%s)",
 				i+1,
-				escapeMD(source.Name),
+				util.EscapeMD(source.Name),
 				source.URL,
 			))
 		}
@@ -105,23 +106,4 @@ func (a Archive) RenderMD() ([]byte, error) {
 
 	//Build and return the Markdown
 	return []byte(builder.String() + EndSentinel), nil
-}
-
-// Escapes a string for usage in Markdown.
-func escapeMD(s string) string {
-	replacer := strings.NewReplacer(
-		"*", "\\*",
-		"_", "\\_",
-		"`", "\\`",
-		"#", "\\#",
-		"-", "\\-",
-		"+", "\\+",
-		".", "\\.",
-		"!", "\\!",
-		"[", "\\[",
-		"]", "\\]",
-		"(", "\\(",
-		")", "\\)",
-	)
-	return replacer.Replace(s)
 }

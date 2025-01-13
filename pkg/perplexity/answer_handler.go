@@ -1,15 +1,20 @@
 package perplexity
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 
 	kmp "github.com/fbonhomm/knuth-morris-pratt/source"
 	"github.com/jgilman1337/chatbot_spider/pkg"
+	postprocess "github.com/jgilman1337/chatbot_spider/pkg/post_process"
+	markdown "github.com/teekennedy/goldmark-markdown"
+	"github.com/yuin/goldmark"
 )
 
 // Handles what is to be done when the aggregator encounters a block containing an answer.
-func handleEncounterAnswer(cont string, ans *[]pkg.Reply) {
+func (c Crawler[T]) handleEncounterAnswer(cont string, ans *[]pkg.Reply) {
 	//Unmarshal to an array of interfaces
 	//This unescapes the target JSON data
 	data := make([]interface{}, 0)
@@ -62,6 +67,33 @@ func handleEncounterAnswer(cont string, ans *[]pkg.Reply) {
 		source.ID = i + 1
 		source.Name = result.Name
 		source.URL = result.URL
+	}
+
+	//Post-process the answer, if requested
+	if c.Options.PostProcessCitations {
+		//Setup the post-processor
+		urls := make([]string, len(sources))
+		for i, source := range sources {
+			urls[i] = source.URL
+		}
+		citer := postprocess.NewInlineCitationTransformer(urls...)
+
+		//Setup Goldmark with the post-processor
+		gm := goldmark.New(
+			goldmark.WithExtensions(
+				citer,
+			),
+		)
+		gm.SetRenderer(markdown.NewRenderer())
+		buf := bytes.Buffer{}
+
+		//Render the Goldmark AST to GFLM
+		if err := gm.Convert([]byte(answer.Answer), &buf); err != nil {
+			log.Fatalf("Encountered Markdown conversion error: %v", err)
+		}
+
+		//Replace the answer text with the post-processed answer
+		answer.Answer = buf.String()
 	}
 
 	//Construct a generic reply object
