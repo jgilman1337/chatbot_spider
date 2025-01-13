@@ -83,24 +83,25 @@ func (a Archive) RenderMD() ([]byte, error) {
 		))
 
 		//Add the reply, sans any sources
-		builder.WriteString(fmt.Sprintf("## %s\n%s%s",
+		builder.WriteString(fmt.Sprintf("## %s\n%s",
 			ReplyHeader,
 			question.Reply.Answer,
-			SourcesBreak,
 		))
 
 		//Add the sources
-		builder.WriteString(SourcesHeader)
-		for i, source := range question.Reply.Sources {
-			if i > 0 {
-				builder.WriteString("\n")
-			}
+		if len(question.Reply.Sources) > 0 {
+			builder.WriteString(SourcesBreak + SourcesHeader)
+			for i, source := range question.Reply.Sources {
+				if i > 0 {
+					builder.WriteString("\n")
+				}
 
-			builder.WriteString(fmt.Sprintf("- [(%d) %s](%s)",
-				i+1,
-				util.EscapeMD(source.Name),
-				source.URL,
-			))
+				builder.WriteString(fmt.Sprintf("- [(%d) %s](%s)",
+					i+1,
+					util.EscapeMD(source.Name),
+					source.URL,
+				))
+			}
 		}
 	}
 

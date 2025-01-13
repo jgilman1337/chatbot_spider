@@ -44,6 +44,8 @@ func (c Crawler[T]) handleEncounterAnswer(cont string, ans *[]pkg.Reply) {
 		}
 		item = item[idx:]
 
+		//fmt.Printf("raw ans json: ```%s```\n\n\n", item)
+
 		//Unmarshal the answer to a struct
 		if err := json.Unmarshal([]byte(item), &answer); err != nil {
 			fmt.Printf("answerHandler: err during 2nd parse pass: %s\n", err)

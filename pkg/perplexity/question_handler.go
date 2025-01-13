@@ -39,6 +39,8 @@ func (c Crawler[T]) handleEncounterQuestion(cont string, ques *[]string) {
 		}
 		item = item[idx : len(item)-len(suffix)-1]
 
+		//fmt.Printf("raw ques json: ```%s```\n\n\n", item)
+
 		//Unmarshal the queries object to a struct
 		if err := json.Unmarshal([]byte(item), &queries); err != nil {
 			fmt.Printf("questionHandler: err during 2nd parse pass: %s\n", err)
