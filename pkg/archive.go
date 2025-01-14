@@ -1,11 +1,16 @@
 package pkg
 
 import (
+	"bytes"
 	"fmt"
 	"strings"
 	"time"
 
 	"github.com/jgilman1337/chatbot_spider/pkg/util"
+	"github.com/yuin/goldmark"
+	"github.com/yuin/goldmark/extension"
+	"github.com/yuin/goldmark/parser"
+	"github.com/yuin/goldmark/renderer/html"
 )
 
 var (
@@ -46,6 +51,51 @@ type Metadata struct {
 
 	//The time at which the thread was archived.
 	Archived time.Time `json:"archived"`
+}
+
+// Renders an `Archive` object to HTML using Goldmark.
+func (a Archive) RenderHTML() ([]byte, error) {
+	//Get the markdown render of the object
+	md, err := a.RenderMD()
+	if err != nil {
+		return nil, err
+	}
+
+	//Setup Goldmark
+	goldmark := goldmark.New(
+		goldmark.WithExtensions(extension.GFM),
+		goldmark.WithParserOptions(
+			parser.WithAutoHeadingID(),
+		),
+		goldmark.WithRendererOptions(
+			html.WithHardWraps(),
+		),
+	)
+
+	//Render the document
+	var buf bytes.Buffer
+	if err := goldmark.Convert(md, &buf); err != nil {
+		return nil, err
+	}
+
+	//Create the document header
+	header := strings.ReplaceAll(
+		fmt.Sprintf(`
+		<head>
+			<title>%s :: %s</title>
+		</head>
+		`,
+			a.Title,
+			ProgIdent,
+		),
+		"\t",
+		"",
+	)
+
+	//Add the missing `<html>` tag
+	html := "<html>" + header + "<body>\n" + buf.String() + "</body></html>\n"
+
+	return []byte(html), nil
 }
 
 // Renders an `Archive` object to Markdown. Based off SaveMyChatbot's format.

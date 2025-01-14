@@ -23,7 +23,7 @@ func parserTestsBackend(t *testing.T, url string, quiet bool, opts perplexity.Op
 		fmt.Println("md::```\n" + string(md) + "\n```")
 	}
 
-	//Return the metadata object
+	//Return the archive object
 	return dat
 }
 

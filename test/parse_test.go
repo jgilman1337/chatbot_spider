@@ -1,6 +1,7 @@
 package test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/jgilman1337/chatbot_spider/pkg/perplexity"
@@ -9,7 +10,7 @@ import (
 var (
 	topts = func() perplexity.Options {
 		opts := perplexity.DefaultOpts()
-		opts.PostProcessCitations = false
+		opts.PostProcessCitations = true
 		return opts
 	}()
 )
@@ -26,7 +27,13 @@ func TestParse_Nontrivial_Single(t *testing.T) {
 
 func TestParse_Single(t *testing.T) {
 	url := "./data/single_q.txt"
-	parserTestsBackend(t, url, false, topts)
+	dat := parserTestsBackend(t, url, true, topts)
+
+	txt, err := dat.RenderHTML()
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Printf("txt: ```%s```\n", string(txt))
 }
 
 func TestParse_Two(t *testing.T) {

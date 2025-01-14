@@ -23,6 +23,7 @@ var (
 	ErrorNilDoc       = errors.New("document is not currently populated; run `Crawl()` first")
 	ErrorHttpResp     = errors.New("http error")
 	ErrorUnbalancedQA = errors.New("unequal question and answer array sizes")
+	ErrNoQA           = errors.New("no questions or answers found")
 
 	headers = map[string]string{
 		"User-Agent":      "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:132.0) Gecko/20100101 Firefox/132.0",
@@ -183,6 +184,11 @@ func (c Crawler[T]) Aggregate(_ []byte) (*T, error) {
 		}
 	})
 
+	//Ensure both arrays have entires
+	if len(questions) < 1 || len(answers) < 1 {
+		return nil, ErrNoQA
+	}
+
 	//At this point, the question and answer arrays are fully filled
 	//It is assumed that each question has a corresponding answer, so reject if this isn't the case
 	if len(questions) != len(answers) {
@@ -233,7 +239,7 @@ func (c Crawler[T]) GetPageMetadata() (*pkg.Metadata, error) {
 	//Parse the creation date to a Go time object
 	createdTime, err := dateparse.ParseAny(created)
 	if err != nil {
-		fmt.Printf("error when parsing creation time `%s`: %s", created, err)
+		return nil, fmt.Errorf("error when parsing creation time `%s`: %s", created, err)
 	}
 
 	//Construct the final metadata object
