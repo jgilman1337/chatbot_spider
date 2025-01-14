@@ -2,12 +2,47 @@ package test
 
 import (
 	"fmt"
+	"os"
 	"testing"
 
 	"github.com/hbollon/go-edlib"
 	"github.com/jgilman1337/chatbot_spider/pkg"
 	"github.com/jgilman1337/chatbot_spider/pkg/perplexity"
 )
+
+// Runs a fuzzy comparison between 2 strings to determine similarity.
+func compare(t *testing.T, expected, actual string, minSimilarity float64) {
+	percSim := runeSimilarity(expected, actual)
+	if percSim < minSimilarity {
+		t.Fatalf("fuzzy comparison failed between expected and actual; need: %f, got: %f", minSimilarity, percSim)
+	} else {
+		t.Logf("fuzzy comparison succeeded between expected and actual; need: %f, got: %f", minSimilarity, percSim)
+	}
+}
+
+// Parses a scraped Perplexity page and compares it against an expected output.
+func parseAndCompare(t *testing.T, quiet bool, opts perplexity.Options, actualUrl, expectedUrl string, minSimilarity float64) {
+	//Get the archive
+	dat := perplexityProvider(t, actualUrl, opts)
+
+	//Render to markdown
+	actual, err := dat.RenderMD()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !quiet {
+		fmt.Println("md::'''\n" + string(actual) + "'''")
+	}
+
+	//Read in the expected output
+	expected, err := os.ReadFile(expectedUrl)
+	if err != nil {
+		t.Fatalf("failed to read 'expected' output file: %s", err)
+	}
+
+	//Compare the two files
+	compare(t, string(expected), string(actual), minSimilarity)
+}
 
 // Contains common code for parser tests.
 func parserTestsBackend(t *testing.T, url string, quiet bool, opts perplexity.Options) *pkg.Archive {
@@ -20,7 +55,7 @@ func parserTestsBackend(t *testing.T, url string, quiet bool, opts perplexity.Op
 		t.Fatal(err)
 	}
 	if !quiet {
-		fmt.Println("md::```\n" + string(md) + "\n```")
+		fmt.Println("md::'''\n" + string(md) + "'''")
 	}
 
 	//Return the archive object

@@ -1,7 +1,6 @@
 package test
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/jgilman1337/chatbot_spider/pkg/perplexity"
@@ -16,27 +15,29 @@ var (
 )
 
 func TestParse_Multiple(t *testing.T) {
-	url := "./data/multiple_qs.txt"
-	parserTestsBackend(t, url, false, topts)
+	urlA := "./data/multiple_qs.txt"
+	urlE := "./data/expected_savemyphind/multiple_qs.md.txt"
+	minSim := 82.5 //Some sources were missing from the scraped page that SMChatBot picked up (possibly) via duping
+	parseAndCompare(t, false, topts, urlA, urlE, minSim)
 }
 
 func TestParse_Nontrivial_Single(t *testing.T) {
-	url := "./data/nontrivial_single_q.txt"
-	parserTestsBackend(t, url, false, topts)
+	urlA := "./data/nontrivial_single_q.txt"
+	urlE := "./data/expected_savemyphind/nontrivial_single_q.md.txt"
+	minSim := 85.0 //85% is ok; small differences more noticeable in smaller comparisons
+	parseAndCompare(t, false, topts, urlA, urlE, minSim)
 }
 
 func TestParse_Single(t *testing.T) {
-	url := "./data/single_q.txt"
-	dat := parserTestsBackend(t, url, true, topts)
-
-	txt, err := dat.RenderHTML()
-	if err != nil {
-		t.Fatal(err)
-	}
-	fmt.Printf("txt: ```%s```\n", string(txt))
+	urlA := "./data/single_q.txt"
+	urlE := "./data/expected_savemyphind/single_q.md.txt"
+	minSim := 90.0
+	parseAndCompare(t, false, topts, urlA, urlE, minSim)
 }
 
 func TestParse_Two(t *testing.T) {
-	url := "./data/two_qs.txt"
-	parserTestsBackend(t, url, false, topts)
+	urlA := "./data/two_qs.txt"
+	urlE := "./data/expected_savemyphind/two_qs.md.txt"
+	minSim := 90.0
+	parseAndCompare(t, false, topts, urlA, urlE, minSim)
 }
