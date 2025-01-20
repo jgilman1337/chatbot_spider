@@ -32,21 +32,10 @@ func (c Crawler[T]) handleEncounterAnswer(cont string, ans *[]pkg.Reply) error {
 	}
 
 	//Loop over the collected array items
-	for i, dat := range data {
-		if i > 0 {
-			fmt.Print("\n\n")
-		}
-		stritem := fmt.Sprintf("%v", dat)
-		fmt.Printf("child item %d: '''%s'''\n",
-			i+1,
-			stritem[:min(len(stritem), 100)],
-		)
-		fmt.Printf("type: %T\n", dat)
-
+	for _, dat := range data {
 		//Skip non-strings
 		sdat, ok := dat.(string)
 		if !ok {
-			fmt.Println("skipped!")
 			continue
 		}
 		//fmt.Printf("stritem: %s\n", item)
@@ -57,8 +46,6 @@ func (c Crawler[T]) handleEncounterAnswer(cont string, ans *[]pkg.Reply) error {
 		err := json.Unmarshal([]byte(sdat), &nestedDatArr)
 		if err == nil {
 			//Parse the answer from the nested data
-			fmt.Printf("hit #%d is nested\n", i+1)
-
 			ok, err = parseAnsNestedMap(&answer, nestedDatArr)
 			if ok && err == nil {
 				//No need to continue searching if an answer was found
@@ -75,7 +62,6 @@ func (c Crawler[T]) handleEncounterAnswer(cont string, ans *[]pkg.Reply) error {
 			break
 		}
 	}
-	fmt.Print("\n--------------\n\n")
 
 	//Parse the answer only if it's non-null
 	if !foundAns {
