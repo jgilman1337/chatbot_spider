@@ -21,6 +21,13 @@ func TestParse_Multiple(t *testing.T) {
 	parseAndCompare(t, false, topts, urlA, urlE, minSim)
 }
 
+func TestParse_Multiple2025(t *testing.T) {
+	urlA := "./data/multiple_qs_2025.html.txt"
+	urlE := "./data/expected_savemyphind/multiple_qs_2025.md.txt"
+	minSim := 82.5
+	parseAndCompare(t, false, topts, urlA, urlE, minSim)
+}
+
 func TestParse_Nontrivial_Single(t *testing.T) {
 	urlA := "./data/nontrivial_single_q.txt"
 	urlE := "./data/expected_savemyphind/nontrivial_single_q.md.txt"
@@ -38,6 +45,16 @@ func TestParse_Single(t *testing.T) {
 func TestParse_Two(t *testing.T) {
 	urlA := "./data/two_qs.txt"
 	urlE := "./data/expected_savemyphind/two_qs.md.txt"
+	minSim := 90.0
+	parseAndCompare(t, false, topts, urlA, urlE, minSim)
+}
+
+//-----------------------------------------------------
+// 3p thread tests
+
+func TestParse_FalseAssump(t *testing.T) {
+	urlA := "./data/3p/false_mem.html.txt"
+	urlE := "./data/expected_savemyphind/3p/false_mem.md.txt"
 	minSim := 90.0
 	parseAndCompare(t, false, topts, urlA, urlE, minSim)
 }

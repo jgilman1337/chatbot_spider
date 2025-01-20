@@ -165,7 +165,9 @@ func (c Crawler[T]) Aggregate(_ []byte) (*T, error) {
 		ansPrefix := `{\"answer\":`
 		kmpAnsIdx := kmp.Search([]byte(cont), []byte(ansPrefix))
 		if kmpAnsIdx != -1 {
-			c.handleEncounterAnswer(cont, &answers)
+			if err := c.handleEncounterAnswer(cont, &answers); err != nil {
+				log.Fatalf("error while processing answer: %s", err)
+			}
 		}
 
 		//Check if the current script content has a question using the KMP algorithm
@@ -180,7 +182,9 @@ func (c Crawler[T]) Aggregate(_ []byte) (*T, error) {
 			}
 
 			//Parse out the questions from the found queries block
-			c.handleEncounterQuestion(cont, &questions)
+			if err := c.handleEncounterQuestion(cont, &questions); err != nil {
+				log.Fatalf("error while processing question: %s", err)
+			}
 		}
 	})
 

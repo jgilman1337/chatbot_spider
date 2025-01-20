@@ -8,13 +8,12 @@ import (
 )
 
 // Handles what is to be done when the aggregator encounters a block containing a question
-func (c Crawler[T]) handleEncounterQuestion(cont string, ques *[]string) {
+func (c Crawler[T]) handleEncounterQuestion(cont string, ques *[]string) error {
 	//Unmarshal to an array of interfaces
 	//This unescapes the target JSON data
 	data := make([]interface{}, 0)
 	if err := json.Unmarshal([]byte(cont), &data); err != nil {
-		fmt.Printf("questionHandler: err during 1st parse pass: %s\n", err)
-		return
+		return fmt.Errorf("questionHandler: err during 1st parse pass: %s", err)
 	}
 
 	//Setup the target queries struct
@@ -39,12 +38,11 @@ func (c Crawler[T]) handleEncounterQuestion(cont string, ques *[]string) {
 		}
 		item = item[idx : len(item)-len(suffix)-1]
 
-		//fmt.Printf("raw ques json: ```%s```\n\n\n", item)
+		//fmt.Printf("raw ques json: '''%s'''\n\n\n", item)
 
 		//Unmarshal the queries object to a struct
 		if err := json.Unmarshal([]byte(item), &queries); err != nil {
-			fmt.Printf("questionHandler: err during 2nd parse pass: %s\n", err)
-			continue
+			return fmt.Errorf("questionHandler: err during 2nd parse pass: %w", err)
 		}
 
 		//Queries object was found; no need to continue
@@ -54,7 +52,7 @@ func (c Crawler[T]) handleEncounterQuestion(cont string, ques *[]string) {
 
 	//Parse the questions only if it's non-null
 	if !foundQueries {
-		return
+		return nil
 	}
 
 	//Add the collected queries to the output array
@@ -63,4 +61,6 @@ func (c Crawler[T]) handleEncounterQuestion(cont string, ques *[]string) {
 		qtext := question.QueryStr
 		*ques = append(*ques, qtext)
 	}
+
+	return nil
 }

@@ -7,6 +7,7 @@ require (
 	github.com/andybalholm/cascadia v1.3.2 // indirect
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de // indirect
 	github.com/creasty/defaults v1.8.0 // indirect
+	github.com/emirpasic/gods/v2 v2.0.0-alpha // indirect
 	github.com/fbonhomm/knuth-morris-pratt v0.0.0-20210605112629-42307721d294 // indirect
 	github.com/hbollon/go-edlib v1.6.0 // indirect
 	github.com/pgavlin/aho-corasick v0.5.1 // indirect

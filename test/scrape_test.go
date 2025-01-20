@@ -9,9 +9,7 @@ import (
 
 func TestScrape(t *testing.T) {
 	//cSetup
-	url := "https://www.perplexity.ai/search/any-way-to-do-this-more-concis-QGFOL_P.RzalvOSUiNYUdQ"
-	//url := "https://www.perplexity.ai/search/hi-RVnJW4CaTaSOv4cS1uPmSQ"
-	//url := "https://www.perplexity.ai/page/mirror-microbe-threat-warning-_ZXTBw9cTj6jbVaTlnz4vQ"
+	url := "https://www.perplexity.ai/search/ai-amplifies-false-memories-9iZN5JuFT5.9asR1Ntf._A"
 
 	//Do the initial crawl
 	crawler := perplexity.NewPerplexityCrawler()
