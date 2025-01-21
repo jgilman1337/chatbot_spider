@@ -190,7 +190,9 @@ func (c Crawler[T]) Aggregate(_ []byte) (*T, error) {
 
 	//Ensure both arrays have entires
 	if len(questions) < 1 || len(answers) < 1 {
-		return nil, ErrNoQA
+		return nil, fmt.Errorf("%w; %d questions, %d answers", ErrNoQA,
+			len(questions), len(answers),
+		)
 	}
 
 	//At this point, the question and answer arrays are fully filled
