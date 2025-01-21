@@ -21,9 +21,9 @@ func compare(t *testing.T, expected, actual string, minSimilarity float64) {
 }
 
 // Parses a scraped Perplexity page and compares it against an expected output.
-func parseAndCompare(t *testing.T, quiet bool, opts perplexity.Options, actualUrl, expectedUrl string, minSimilarity float64) {
+func parseAndCompare(t *testing.T, quiet bool, opts perplexity.Options, actualPath, expectedPath string, minSimilarity float64) {
 	//Get the archive
-	dat := perplexityProvider(t, actualUrl, opts)
+	dat := perplexityProvider(t, actualPath, opts)
 
 	//Render to markdown
 	actual, err := dat.RenderMD()
@@ -35,7 +35,7 @@ func parseAndCompare(t *testing.T, quiet bool, opts perplexity.Options, actualUr
 	}
 
 	//Read in the expected output
-	expected, err := os.ReadFile(expectedUrl)
+	expected, err := os.ReadFile(expectedPath)
 	if err != nil {
 		t.Fatalf("failed to read 'expected' output file: %s", err)
 	}
@@ -45,9 +45,9 @@ func parseAndCompare(t *testing.T, quiet bool, opts perplexity.Options, actualUr
 }
 
 // Contains common code for parser tests.
-func parserTestsBackend(t *testing.T, url string, quiet bool, opts perplexity.Options) *pkg.Archive {
+func parserTestsBackend(t *testing.T, path string, quiet bool, opts perplexity.Options) *pkg.Archive {
 	//Get the archive
-	dat := perplexityProvider(t, url, opts)
+	dat := perplexityProvider(t, path, opts)
 
 	//Render to markdown
 	md, err := dat.RenderMD()
@@ -63,11 +63,11 @@ func parserTestsBackend(t *testing.T, url string, quiet bool, opts perplexity.Op
 }
 
 // Contains the parser logic specific to Perplexity.ai documents.
-func perplexityProvider(t *testing.T, url string, opts perplexity.Options) *pkg.Archive {
+func perplexityProvider(t *testing.T, path string, opts perplexity.Options) *pkg.Archive {
 	// Do the initial crawl
 	crawler := perplexity.NewPerplexityCrawler()
 	crawler.Options = opts
-	if err := crawler.FromFile(url); err != nil {
+	if err := crawler.FromFile(path); err != nil {
 		t.Fatal(err)
 	}
 
